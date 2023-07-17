@@ -23,8 +23,15 @@ export interface ICost {
   _id?: number | string;
 }
 
-export interface ICreateCost {
+export interface IBaseEffectArgs {
   url: string;
-  cost: ICost;
   token: string;
+}
+
+export interface ICreateCost extends IBaseEffectArgs {
+  cost: ICost;
+}
+
+export interface IRefreshToken extends IBaseEffectArgs {
+  username: string;
 }

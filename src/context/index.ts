@@ -7,13 +7,12 @@ export const setCosts = costs.createEvent<ICost[]>();
 export const createCosts = costs.createEvent<ICost>();
 export const updateCosts = costs.createEvent<ICost>();
 export const removeCosts = costs.createEvent<string | number>();
+export const setTotalPrice = costs.createEvent<number>();
 
 export const $costs = costs
   .createStore<ICost[]>([])
   .on(createCosts, (state, cost) => [...state, cost])
   .on(setCosts, (_, costs) => costs);
-
-export const setTotalPrice = costs.createEvent<number>();
 
 export const $totalPrice = costs
   .createStore<number>(0)
