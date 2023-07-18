@@ -35,3 +35,9 @@ export interface ICreateCost extends IBaseEffectArgs {
 export interface IRefreshToken extends IBaseEffectArgs {
   username: string;
 }
+
+export interface IHandleAxiosErrorPayload {
+  type: string;
+  createCost?: Partial<ICreateCost>;
+  getCosts?: Partial<IBaseEffectArgs>;
+}
