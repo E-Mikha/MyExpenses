@@ -10,7 +10,7 @@ export const handleAxiosError = async (
 ) => {
   const errorMessage =
     ((error as AxiosError).response?.data as { message: string }).message ||
-    ((error as AxiosError).response?.data as { error: string });
+    ((error as AxiosError).response?.data as { error: string }).error;
 
   if (errorMessage) {
     if (errorMessage === "jwt expired") {
@@ -26,7 +26,7 @@ export const handleAxiosError = async (
         switch (payloadData.type) {
           case "get":
             const costs = await getCostsFx({
-              url: "costs",
+              url: "/cost",
               token: authData.access_token,
             });
 
