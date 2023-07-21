@@ -31,6 +31,10 @@ export const CostsItem = ({ cost, index }: ICostsItemProps) => {
     setEdit(false);
   };
 
+  const handleEditCost = () => {
+    setEditSpinner(true)
+  }
+
   const deleteCost = async () => {
     setDeleteSpinner(true);
 
