@@ -1,8 +1,14 @@
 import { AxiosError } from "axios";
-import { IHandleAxiosErrorPayload } from "../types";
+import { ICost, IHandleAxiosErrorPayload } from "../types";
 import { getAuthDataFromLS, handleAlertMessage, removeUser } from "./auth";
-import { deleteCostFx, getCostsFx, refreshTokenFx } from "../api/costsClient";
-import { setCosts } from "../context";
+import {
+  createCostFx,
+  deleteCostFx,
+  getCostsFx,
+  refreshTokenFx,
+  updateCostFx,
+} from "../api/costsClient";
+import { createCosts, setCosts, updateCosts } from "../context";
 
 export const handleAxiosError = async (
   error: unknown,
@@ -31,6 +37,43 @@ export const handleAxiosError = async (
             });
 
             setCosts(costs);
+            break;
+
+          case "create":
+            const cost = await createCostFx({
+              url: "/cost",
+              token: authData.access_token,
+              cost: { ...payloadData.createCost?.cost } as ICost,
+            });
+
+            if (!cost) {
+              return;
+            }
+
+            createCosts(cost);
+            handleAlertMessage({
+              alertText: "Successfully created",
+              alertStatus: "success",
+            });
+            break;
+
+          case "update":
+            const updatedCost = await updateCostFx({
+              url: "/cost",
+              token: authData.access_token,
+              cost: { ...payloadData.updateCost?.cost } as ICost,
+              id: payloadData.updateCost?.id as string,
+            });
+
+            if (!updatedCost) {
+              return;
+            }
+
+            updateCosts(cost);
+            // handleAlertMessage({
+            //   alertText: "Successfully created",
+            //   alertStatus: "success",
+            // });
             break;
 
           case "delete":

@@ -4,6 +4,7 @@ import {
   ICreateCost,
   IDeleteCost,
   IRefreshToken,
+  IUpdateCost,
 } from "../types";
 import api from "./axiosClient";
 import { removeUser } from "../utils/auth";
@@ -20,7 +21,23 @@ export const createCostFx = createEffect(
 
       return data;
     } catch (error) {
-      console.log(error);
+      handleAxiosError(error, { type: "create", createCost: { cost } });
+    }
+  }
+);
+
+export const updateCostFx = createEffect(
+  async ({ url, cost, token, id }: IUpdateCost) => {
+    try {
+      const { data } = await api.patch(
+        `${url}/${id}`,
+        { ...cost },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      return data;
+    } catch (error) {
+      handleAxiosError(error, { type: "update", updateCost: { cost, id } });
     }
   }
 );
