@@ -1,25 +1,30 @@
-import { useState } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import { ICostsItemProps } from "../../../types";
 import { getAuthDataFromLS, handleAlertMessage } from "../../../utils/auth";
-import { deleteCostFx } from "../../../api/costsClient";
-import { removeCosts } from "../../../context";
+import { deleteCostFx, updateCostFx } from "../../../api/costsClient";
+import { removeCosts, updatedCost } from "../../../context";
 import { Spinner } from "../../Spinner/Spinner";
 import { formateDate } from "../../../utils/arrayUtils";
 import "./styles.css";
+import { validationInputs } from "../../../utils/validation";
 
 export const CostsItem = ({ cost, index }: ICostsItemProps) => {
   const [edit, setEdit] = useState(false);
   const [deleteSpinner, setDeleteSpinner] = useState(false);
   const [editSpinner, setEditSpinner] = useState(false);
   const [newText, setNewText] = useState(cost.text);
-  const [newPrice, setNewPrice] = useState(cost.price);
+  const [newPrice, setNewPrice] = useState<string | number>(cost.price);
   const [newDate, setNewDate] = useState(cost.date);
+
+  const textRef = useRef() as MutableRefObject<HTMLInputElement>;
+  const priceRef = useRef() as MutableRefObject<HTMLInputElement>;
+  const dateRef = useRef() as MutableRefObject<HTMLInputElement>;
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) =>
     setNewText(event.target.value);
 
   const handleChangePrice = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setNewPrice(+event.target.value);
+    setNewPrice(event.target.value);
 
   const handleChangeDate = (event: React.ChangeEvent<HTMLInputElement>) =>
     setNewDate(event.target.value);
@@ -31,9 +36,47 @@ export const CostsItem = ({ cost, index }: ICostsItemProps) => {
     setEdit(false);
   };
 
-  const handleEditCost = () => {
-    setEditSpinner(true)
-  }
+  const handleEditCost = async () => {
+    setEditSpinner(true);
+
+    if (
+      newText === cost.text &&
+      +newPrice === +cost.price &&
+      newDate === cost.date
+    ) {
+      setEditSpinner(false);
+      setEdit(false);
+      return;
+    }
+
+    if (!validationInputs(textRef, priceRef, dateRef)) {
+      setEditSpinner(false);
+      return;
+    }
+
+    const authData = getAuthDataFromLS();
+
+    const editedCost = await updateCostFx({
+      url: "/cost",
+      token: authData.access_token,
+      cost: { text: newText, price: +newPrice, date: newDate },
+      id: cost._id as string,
+    });
+
+    if (!editedCost) {
+      setEditSpinner(false);
+      setEdit(false);
+      return;
+    }
+
+    setEdit(false);
+    setEditSpinner(false);
+    updatedCost(editedCost);
+    handleAlertMessage({
+      alertText: "Successfully updated",
+      alertStatus: "success",
+    });
+  };
 
   const deleteCost = async () => {
     setDeleteSpinner(true);
@@ -64,6 +107,7 @@ export const CostsItem = ({ cost, index }: ICostsItemProps) => {
 
         {edit ? (
           <input
+            ref={textRef}
             onChange={handleChangeText}
             value={newText}
             type="text"
@@ -75,6 +119,7 @@ export const CostsItem = ({ cost, index }: ICostsItemProps) => {
 
         {edit ? (
           <input
+            ref={dateRef}
             onChange={handleChangeDate}
             value={new Date(newDate).toISOString().split("T")[0]}
             type="date"
@@ -89,6 +134,7 @@ export const CostsItem = ({ cost, index }: ICostsItemProps) => {
       <div className="cost-item-right d-flex align-items-center">
         {edit ? (
           <input
+            ref={priceRef}
             onChange={handleChangePrice}
             value={newPrice}
             type="text"
@@ -100,7 +146,10 @@ export const CostsItem = ({ cost, index }: ICostsItemProps) => {
 
         {edit ? (
           <div className="btn-block__inner">
-            <button className="btn btn-success btn-save">
+            <button
+              className="btn btn-success btn-save"
+              onClick={handleEditCost}
+            >
               {editSpinner ? <Spinner top={5} left={38} /> : "Save"}
             </button>
             <button

@@ -11,3 +11,16 @@ form {
   min-width: 96px;
   height: 38px;
 }
+
+@media (max-width: 575px) {
+  form {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-item {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}

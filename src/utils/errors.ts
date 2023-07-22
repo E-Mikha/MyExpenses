@@ -8,7 +8,7 @@ import {
   refreshTokenFx,
   updateCostFx,
 } from "../api/costsClient";
-import { createCosts, setCosts, updateCosts } from "../context";
+import { createCosts, setCosts, updatedCost } from "../context";
 
 export const handleAxiosError = async (
   error: unknown,
@@ -58,22 +58,22 @@ export const handleAxiosError = async (
             break;
 
           case "update":
-            const updatedCost = await updateCostFx({
+            const editedCost = await updateCostFx({
               url: "/cost",
               token: authData.access_token,
               cost: { ...payloadData.updateCost?.cost } as ICost,
               id: payloadData.updateCost?.id as string,
             });
 
-            if (!updatedCost) {
+            if (!editedCost) {
               return;
             }
 
-            updateCosts(cost);
-            // handleAlertMessage({
-            //   alertText: "Successfully created",
-            //   alertStatus: "success",
-            // });
+            updatedCost(editedCost);
+            handleAlertMessage({
+              alertText: "Successfully updated",
+              alertStatus: "success",
+            });
             break;
 
           case "delete":
