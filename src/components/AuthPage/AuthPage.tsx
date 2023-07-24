@@ -39,7 +39,7 @@ export const AuthPage = ({ type }: { type: "login" | "registration" }) => {
 
     const result = await AuthClient.login(username, password);
 
-    handleAuthResponse(result, "/costs", "Signed in");
+    handleAuthResponse(result, "/costs", "Sign in");
   };
 
   const handleRegistration = async (username: string, password: string) => {
