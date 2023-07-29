@@ -1,11 +1,5 @@
 {
   "version": 2,
-
-  "env": {
-    "SERVER_URL": "mongodb+srv://Mikha:mikha1234@cluster0.4wsoaoy.mongodb.net/?retryWrites=true&w=majority",
-    "DATEBASE_NAME": "Costs"
-  },
-
   "builds": [
     {
       "src": "/main.ts",
