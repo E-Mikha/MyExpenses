@@ -31,7 +31,7 @@ export const AuthPage = ({ type }: { type: "login" | "registration" }) => {
     if (!username || !password) {
       setSpinner(false);
       handleAlertMessage({
-        alertText: "Fill in all the fields",
+        alertText: "Please fill in all the fields",
         alertStatus: "warning",
       });
       return;
