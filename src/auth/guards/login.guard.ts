@@ -20,7 +20,9 @@ export class LoginGuard implements CanActivate {
     const user = await this.authService.validateUser(username);
 
     if (!user) {
-      throw new UnauthorizedException(`User name ${username} not registered`);
+      throw new UnauthorizedException(
+        `User name ${username} is not registered`,
+      );
     }
 
     if (user.password !== password) {
